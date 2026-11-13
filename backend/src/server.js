@@ -15,6 +15,7 @@ const app = express();
 const allowedOrigins = new Set([
   'http://localhost:5173',
   'https://careconnect-tawny-one.vercel.app',
+  'https://careconnect-git-main-pd568138-designs-projects.vercel.app',
   ...(process.env.CLIENT_URL || '').split(',').map(s => s.trim()).filter(Boolean)
 ]);
 app.use(helmet({ crossOriginResourcePolicy: { policy: 'cross-origin' } }));
