@@ -1,4 +1,4 @@
-const configured = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+const configured = import.meta.env.VITE_API_URL || 'https://careconnect-lp78.onrender.com/api';
 const API_BASE = configured.trim().replace(/\/+$/, '');
 
 export async function api(path, { token, ...options } = {}) {
