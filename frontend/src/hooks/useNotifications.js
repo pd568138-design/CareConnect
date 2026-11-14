@@ -5,7 +5,7 @@ export default function useNotifications(user) {
   const socketRef = useRef(null);
   useEffect(() => {
     if (!user) return;
-    const socket = io(import.meta.env.VITE_SOCKET_URL || "http://localhost:5000", { transports: ["websocket", "polling"] });
+    const socket = io(import.meta.env.VITE_SOCKET_URL || "https://careconnect-lp78.onrender.com/", { transports: ["websocket", "polling"] });
     socketRef.current = socket;
     socket.emit("join", { userId: user.id || user._id, role: user.role });
     socket.on("notification", (item) => {
