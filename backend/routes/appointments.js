@@ -1,0 +1,10 @@
+import {Router} from "express";
+import {Appointment} from "../models/index.js";
+import {auth,allow} from "../middleware/auth.js";
+import {notifyRole,notifyUser} from "../utils/notify.js";
+const r=Router();
+r.use(auth);
+r.get("/",async(req,res)=>{try{const filter=req.user.role==="patient"?{patient:req.user.id}:{};res.json(await Appointment.find(filter).sort({createdAt:-1}).lean());}catch{res.status(500).json({message:"Could not fetch appointments"});}});
+r.post("/",allow("patient"),async(req,res)=>{try{const {symptoms,specialty,age}=req.body||{};if(!symptoms||!specialty||!age)return res.status(400).json({message:"Age, specialty and reason are required"});const a=await Appointment.create({...req.body,patient:req.user.id,patientName:req.user.name,patientEmail:req.user.email});notifyRole("admin","New appointment request received","appointment");res.status(201).json(a);}catch{res.status(500).json({message:"Could not create appointment"});}});
+r.patch("/:id/status",allow("admin","doctor"),async(req,res)=>{try{const {status,appointmentDate,slot,assignedDoctor}=req.body||{};if(!["accepted","rejected","completed"].includes(status))return res.status(400).json({message:"Invalid appointment status"});const a=await Appointment.findByIdAndUpdate(req.params.id,{status,appointmentDate,slot,assignedDoctor},{new:true});if(!a)return res.status(404).json({message:"Appointment not found"});notifyUser(a.patient,`Your appointment request was ${status}.`,"appointment");res.json(a);}catch{res.status(400).json({message:"Could not update appointment"});}});
+export default r;
